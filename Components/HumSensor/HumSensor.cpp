@@ -98,20 +98,6 @@ namespace Components {
   }
     
     
-    
-    
-    /*
-    {
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastSwitchTime).count();
-
-    if (elapsed >= 10) {
-      humarea = randomGenerator() % 10; 
-      lastSwitchTime = now;
-    }
-    h.hum = std::uniform_real_distribution<F32>(0.0, 100.0)(randomGenerator);
-  }*/
-
   void HumSensor ::
       getHum(
           HumData *data)

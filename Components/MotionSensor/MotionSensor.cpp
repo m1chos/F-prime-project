@@ -35,7 +35,7 @@ namespace Components {
 
 void MotionSensor ::
     init(
-        //const NATIVE_INT_TYPE queueDepth,
+        
         const NATIVE_INT_TYPE instance
     )
   {
@@ -68,21 +68,21 @@ void MotionSensor ::
   {
     if (i2c_status) {
    #ifdef _BOARD_RPIPICO 
-    // Ενημέρωση δεδομένων από τον αισθητήρα
+  
     this->mpu->update();
     this->mpu->getAccel(&a);
    #else
    update();
    getAccel(&a);
    #endif
-    // Get accelerometer data
+
     acc_data[0] = a.accelX;
     acc_data[1] = a.accelY;
     acc_data[2] = a.accelZ;
     
-    // Αποστολή Telemetry για την επιτάχυνση
+    
     this->tlmWrite_accelerometer(acc_data);
-    // Αποστολή Telemetry για τη θερμοκρασία
+    
     #ifdef _BOARD_RPIPICO
     this->tlmWrite_tempC(mpu->getTemp());
     #endif
@@ -93,16 +93,16 @@ void MotionSensor ::
   #ifdef _BOARD_RPIPICO
   void MotionSensor::init_i2c(void) {
 
-    Wire.begin();             // join i2c bus
-    Wire.setClock(400000UL);  // set speed to 400k
+    Wire.begin();             
+    Wire.setClock(400000UL); 
 
-    // Init MPU6050: send telemetry and event
+    
     if( mpu->init(calib, IMU_ADDRESS) != 0) {
-      // Initialization failed
+    
       this->log_WARNING_HI_MpuInitFail();
       this->tlmWrite_connected(false);
     } else {
-      // Successfully initialized
+    
       this->tlmWrite_connected(true);
       this->log_ACTIVITY_HI_MpuInitSucc();
     }
@@ -114,13 +114,13 @@ void MotionSensor ::
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastSwitchTime).count();
 
-    // Change dominant axis every 10 seconds
+  
     if (elapsed >= 10) {
-      dominantAxis = randomGenerator() % 3; // 0: X, 1: Y, 2: Z
+      dominantAxis = randomGenerator() % 3;
       lastSwitchTime = now;
     }
 
-    // Generate values
+    
     dominantValue = std::uniform_real_distribution<F32>(0.9, 1.1)(randomGenerator);
     otherValue = std::uniform_real_distribution<F32>(-0.1, 0.1)(randomGenerator);
 
@@ -140,4 +140,4 @@ void MotionSensor ::
   }
 #endif
 
-} // end namespace Components
+}

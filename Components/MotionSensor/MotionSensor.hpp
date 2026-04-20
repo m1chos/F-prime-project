@@ -12,7 +12,6 @@
 #ifdef _BOARD_RPIPICO
 #include "FastIMU.h"
 #include <Wire.h>
-// Ορισμός της διεύθυνσης I2C του αισθητήρα
 #define IMU_ADDRESS 0x68
 
 #else 
@@ -60,7 +59,7 @@ namespace Components {
       // Custom Functions
       // ----------------------------------------------------------------------
 
-      //! Initialize I2C and MPU6050
+      
       #ifdef _BOARD_RPIPICO
       void init_i2c();
       #endif
@@ -74,8 +73,8 @@ namespace Components {
       //! Handler implementation for run
       //!
       void run_handler(
-          NATIVE_INT_TYPE portNum, /*!< The port number*/
-          NATIVE_UINT_TYPE context /*!< The call order*/
+          NATIVE_INT_TYPE portNum, 
+          NATIVE_UINT_TYPE context 
       );
 
        I8 dominantAxis = 0;
@@ -101,6 +100,6 @@ namespace Components {
 #endif
   };
 
-} // end namespace Components
+}
 
 #endif
