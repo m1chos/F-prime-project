@@ -126,10 +126,12 @@ module MissionDeployment {
       RedLedOut.gpioSet   -> r_gpioDriver.gpioWrite
       GreenLedOut.gpioSet -> g_gpioDriver.gpioWrite
       BlueLedOut.gpioSet  -> b_gpioDriver.gpioWrite
-      
+      YellowLedOut.gpioSet  -> y_gpioDriver.gpioWrite
+
       payload.RedLedOut   -> r_gpioDriver.gpioWrite
       payload.GreenLedOut-> g_gpioDriver.gpioWrite
       payload.BlueLedOut  -> b_gpioDriver.gpioWrite
+      payload.YellowLedOut  -> y_gpioDriver.gpioWrite
 
       mpu.MpuDataOut[0] -> payload.MpuDataIn
 

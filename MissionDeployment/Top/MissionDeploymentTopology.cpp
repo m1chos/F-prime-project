@@ -74,17 +74,9 @@ void setupTopology(const TopologyState& state) {
     // Initialize MPU instances
     mpu.init_i2c();
 
-    payload.start(
-    TaskIds::payload, 
-    Os::Task::TASK_DEFAULT, 20);
-
     rateDriver.configure(1);
     commDriver.configure(&Serial);
 
-    /* For LED control 
-    *  RGB instances: Enable pins 17, 18, 16
-    */ 
-   
     r_gpioDriver.open(17, Arduino::GpioDriver::GpioDirection::OUT);
     g_gpioDriver.open(18, Arduino::GpioDriver::GpioDirection::OUT);
     b_gpioDriver.open(16, Arduino::GpioDriver::GpioDirection::OUT);
