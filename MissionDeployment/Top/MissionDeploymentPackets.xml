@@ -48,6 +48,7 @@
         <channel name="RedLedOut.led_state"/>
         <channel name="GreenLedOut.led_state"/>
         <channel name="BlueLedOut.led_state"/>
+        <channel name="YellowLedOut.led_state"/>
     </packet>
     <packet name="MPU" id="10" level="1">
         <channel name="mpu.accelerometer"/>
@@ -56,6 +57,7 @@
     </packet>
     <packet name="Payload" id="11" level="1">
         <channel name="payload.avgAcc"/>
+        <channel name="payload.avgHum"/>
         <channel name="payload.State"/>
         <channel name="payload.BlueLedState"/>
         <channel name="payload.RedLedState"/>

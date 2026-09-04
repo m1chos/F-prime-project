@@ -71,7 +71,7 @@ module MissionDeployment {
   instance RedLedOut: Components.LedControl base id 0x22000
   instance GreenLedOut: Components.LedControl base id 0x23000
   instance BlueLedOut: Components.LedControl base id 0x24000
-  instance YellowLedOut: Components.LedControl base id 0x24000
+  instance YellowLedOut: Components.LedControl base id 0x25000
  
   # MPU
   instance mpu: Components.MotionSensor base id 0x11000

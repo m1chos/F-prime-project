@@ -10,14 +10,8 @@ set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/MotionSensor.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/MotionSensor.cpp"
 )
-if(FPRIME-ARDUINO)
+if(FPRIME_ARDUINO)
 target_use_arduino_libraries("FastIMU")
 endif()
-# Uncomment and add any modules that this component depends on, else
-# they might not be available when cmake tries to build this component.
-
-# set(MOD_DEPS
-#     Add your dependencies here
-# )
 
 register_fprime_module()

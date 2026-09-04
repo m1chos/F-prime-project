@@ -96,16 +96,15 @@ void MotionSensor ::
     Wire.begin();             
     Wire.setClock(400000UL); 
 
-    
-    if( mpu->init(calib, IMU_ADDRESS) != 0) {
-    
-      this->log_WARNING_HI_MpuInitFail();
-      this->tlmWrite_connected(false);
-    } else {
-    
-      this->tlmWrite_connected(true);
-      this->log_ACTIVITY_HI_MpuInitSucc();
-    }
+    if (mpu->init(calib, IMU_ADDRESS) != 0) {
+    this->i2c_status = false;
+    this->log_WARNING_HI_MpuInitFail();
+    this->tlmWrite_connected(false);
+} else {
+    this->i2c_status = true;
+    this->tlmWrite_connected(true);
+    this->log_ACTIVITY_HI_MpuInitSucc();
+}
   }
 #else
   void MotionSensor ::

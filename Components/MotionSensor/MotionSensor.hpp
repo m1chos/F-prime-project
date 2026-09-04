@@ -85,8 +85,7 @@ namespace Components {
 #ifdef _BOARD_RPIPICO
       bool i2c_status = false;
       calData calib = { 0 };
-      MPU6050* mpu = new MPU6050();
-      MPU6050* mpu;
+      MPU6050* mpu = nullptr;
 #else
       bool i2c_status = true;
       F32 dominantValue;
