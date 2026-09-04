@@ -175,7 +175,6 @@ void Payload :: humidity_led_handler() {
 
       if (!on_off.isValid()) {
       this->log_WARNING_LO_InvalidPayloadArg(on_off);
-      BlueLedState = Fw::Logic::LOW;
       cmdResp = Fw::CmdResponse::VALIDATION_ERROR;
     }  else {
     this->m_state = on_off;
