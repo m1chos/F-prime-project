@@ -1,0 +1,33 @@
+build/
+build-*/
+build-artifacts/
+cmake-build-*/
+
+logs/
+*.log
+
+*.swp
+*.swo
+*~
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+.vscode/
+.idea/
+
+fprime.zip
+v3.4.1.zip*
+fprime-arduino (2)/
+fprime-arduino (3)/
+
+.DS_Store
+Thumbs.db
+
+.cache/
+fprime_backup/
+fprime-arduino_backup/
+fprime-arduino-deployment-cookiecutter/
+setup_legacy.sh

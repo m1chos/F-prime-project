@@ -1,6 +1,6 @@
 // ======================================================================
 // \title  MotionSensor.hpp
-// \author [YourName]
+// \author michos
 // \brief  hpp file for MotionSensor component implementation class
 // ======================================================================
 
