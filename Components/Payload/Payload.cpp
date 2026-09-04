@@ -44,13 +44,22 @@ namespace Components {
 
   }
 
-  F32 Payload::calculateAverage(const std::array<F32, FILTER_SIZE>& dataArray) const {
-    F32 sum=0.0;
-    for (PlatformSizeType i = 0; i < FILTER_SIZE; ++i) {
-    sum += dataArray[i];
+    F32 Payload::calculateAverage(
+    const std::array<F32, FILTER_SIZE>& dataArray,
+    U8 sampleCount
+    ) const {
+    if (sampleCount == 0) {
+        return 0.0;
     }
-    return sum/FILTER_SIZE;
-  }
+
+    F32 sum = 0.0;
+
+    for (PlatformSizeType i = 0; i < sampleCount; ++i) {
+        sum += dataArray[i];
+    }
+
+    return sum / sampleCount;
+}
 
   void Payload::MpuDataIn_handler(NATIVE_INT_TYPE portNum, const Components::Vector &acceleration)
   {
@@ -68,26 +77,28 @@ namespace Components {
    #endif
       this->tlmWrite_RedLedState(RedLedState);
       
-      if(this->m_state == Fw::On::OFF) {
-          this->RedLedState = Fw::Logic::LOW;
-      }
       
-      this->accDataArrayX[this->m_counter] = acceleration[0];
-      this->accDataArrayY[this->m_counter] = acceleration[1];
-      this->accDataArrayZ[this->m_counter] = acceleration[2];
       
-      this->m_counter = (this->m_counter + 1) % FILTER_SIZE;
-    
-      avgAcceleration[0] = calculateAverage(this->accDataArrayX);
-      avgAcceleration[1] = calculateAverage(this->accDataArrayY);
-      avgAcceleration[2] = calculateAverage(this->accDataArrayZ);    
-      
+        this->accDataArrayX[this->m_counter] = acceleration[0];
+        this->accDataArrayY[this->m_counter] = acceleration[1];
+        this->accDataArrayZ[this->m_counter] = acceleration[2];
+
+        if (this->m_accSampleCount < FILTER_SIZE) {
+            this->m_accSampleCount++;
+        }
+
+        this->m_counter = (this->m_counter + 1) % FILTER_SIZE;
+
+        avgAcceleration[0] = calculateAverage(this->accDataArrayX, this->m_accSampleCount);
+        avgAcceleration[1] = calculateAverage(this->accDataArrayY, this->m_accSampleCount);
+        avgAcceleration[2] = calculateAverage(this->accDataArrayZ, this->m_accSampleCount);
       this->tlmWrite_avgAcc(avgAcceleration);
       }  
   }
 
 void Payload::acceleration_led_handler() {      
 
+    currentAxis = Payload_Axis::X;  
     F32 maxValue = fabs(avgAcceleration[0]);
 
     if (fabs(avgAcceleration[1]) > maxValue) {
@@ -124,10 +135,13 @@ void Payload::HumDataIn_handler(NATIVE_INT_TYPE portNum, const Components::HumVe
     if (this->m_state == Fw::On::ON) {
            
       this->hum_data[this->h_counter] = humidity[0];
-      
-      this->h_counter = (this->h_counter + 1) % FILTER_SIZE;
-    
-      avgHumidity = calculateAverage(this->hum_data);
+    if (this->m_humSampleCount < FILTER_SIZE) {
+    this->m_humSampleCount++;
+    }
+
+    this->h_counter = (this->h_counter + 1) % FILTER_SIZE;
+
+    avgHumidity = calculateAverage(this->hum_data, this->m_humSampleCount);
        
       this->tlmWrite_avgHum(avgHumidity);
       }  
@@ -163,16 +177,31 @@ void Payload :: humidity_led_handler() {
       this->log_WARNING_LO_InvalidPayloadArg(on_off);
       BlueLedState = Fw::Logic::LOW;
       cmdResp = Fw::CmdResponse::VALIDATION_ERROR;
+    }  else {
+    this->m_state = on_off;
+
+    if (this->m_state == Fw::On::ON) {
+        this->BlueLedState = Fw::Logic::HIGH;
     } else {
-      this->m_state = on_off;
-      BlueLedState = m_state ? Fw::Logic::HIGH : Fw::Logic::LOW;
-      this->log_ACTIVITY_HI_PayloadState(m_state);
+        this->BlueLedState = Fw::Logic::LOW;
+        this->RedLedState = Fw::Logic::LOW;
+        this->GreenLedState = Fw::Logic::LOW;
+        this->YellowLedState = Fw::Logic::LOW;
     }
+
+    this->log_ACTIVITY_HI_PayloadState(this->m_state);
+}
 #ifdef _BOARD_RPIPICO
     BlueLedOut_out(0, BlueLedState);
+    RedLedOut_out(0, RedLedState);
+    GreenLedOut_out(0, GreenLedState);
+    YellowLedOut_out(0, YellowLedState);
 #endif
       this->tlmWrite_State(m_state);
       this->tlmWrite_BlueLedState(BlueLedState);
+      this->tlmWrite_RedLedState(RedLedState);
+      this->tlmWrite_GreenLedState(GreenLedState);
+      this->tlmWrite_YellowLedState(YellowLedState);
       this->cmdResponse_out(opCode, cmdSeq, cmdResp);
     }
 

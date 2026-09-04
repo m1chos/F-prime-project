@@ -37,32 +37,32 @@ namespace Components {
     static constexpr F32 HUM_LIMIT_LOW = 20.0; 
     static constexpr F32 HUM_LIMIT_HIGH = 60.0;
 
+    std::array<F32, FILTER_SIZE> accDataArrayX = {};
+    std::array<F32, FILTER_SIZE> accDataArrayY = {};
+    std::array<F32, FILTER_SIZE> accDataArrayZ = {};
+    std::array<F32, FILTER_SIZE> hum_data = {};
 
-    std::array<F32, FILTER_SIZE> accDataArrayX;
-    std::array<F32, FILTER_SIZE> accDataArrayY;
-    std::array<F32, FILTER_SIZE> accDataArrayZ;
-    std::array<F32, FILTER_SIZE> hum_data;
-
-    Components::Vector avgAcceleration;
-    Components::HumVector avgHumidity;
+    Components::Vector avgAcceleration = {};
+    Components::HumVector avgHumidity = {};
     
-    F32 calculateAverage(const std::array<F32, FILTER_SIZE>& dataArray) const;
+    F32 calculateAverage(const std::array<F32, FILTER_SIZE>& dataArray, U8 sampleCount) const;
 
     Payload_Axis m_lastDominantAxis = Payload_Axis::UNKNOWN;
     Payload_Axis currentAxis = Payload_Axis::X;  
     
-    Fw::On m_state;
+    Fw::On m_state = Fw::On::OFF;
 
-    U32 m_sampleCounter;
+    U8 m_accSampleCount = 0;
+    U8 m_humSampleCount = 0;
 
     NATIVE_INT_TYPE m_counter = 0;
     NATIVE_INT_TYPE h_counter = 0;
     void StartPayload_cmdHandler(FwOpcodeType opCode,U32 cmdSeq, Fw::On on_off);
 
-    Fw::Logic GreenLedState;
-    Fw::Logic RedLedState;
-    Fw::Logic BlueLedState;
-    Fw::Logic YellowLedState;
+   Fw::Logic GreenLedState = Fw::Logic::LOW;
+   Fw::Logic RedLedState = Fw::Logic::LOW;
+   Fw::Logic BlueLedState = Fw::Logic::LOW;
+   Fw::Logic YellowLedState = Fw::Logic::LOW;
 
       void MpuDataIn_handler(
         NATIVE_INT_TYPE portNum, 
