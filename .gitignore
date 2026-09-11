@@ -31,3 +31,4 @@ fprime_backup/
 fprime-arduino_backup/
 fprime-arduino-deployment-cookiecutter/
 setup_legacy.sh
+fprime-venv/
