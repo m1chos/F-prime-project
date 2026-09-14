@@ -3,7 +3,7 @@ module Components {
 passive component MotionSensor {
 
 sync input port run: Svc.Sched
-output port MpuDataOut: [3] MPU_data
+output port MpuDataOut: MPU_data
 
 @ Failed to initialize I2C
 event MpuInitFail severity warning high \

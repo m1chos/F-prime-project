@@ -141,7 +141,7 @@ module LocalDeployment {
 
     connections LocalDeployment {
       # Add here connections to user-defined components
-      mpu.MpuDataOut[0] -> payload.MpuDataIn
+      mpu.MpuDataOut -> payload.MpuDataIn
       hum.HumDataOut[0] -> payload.HumDataIn
 
       cmdDisp.compCmdSend[20] -> payload.cmdIn

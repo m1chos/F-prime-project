@@ -133,7 +133,7 @@ module MissionDeployment {
       payload.BlueLedOut  -> b_gpioDriver.gpioWrite
       payload.YellowLedOut  -> y_gpioDriver.gpioWrite
 
-      mpu.MpuDataOut[0] -> payload.MpuDataIn
+      mpu.MpuDataOut -> payload.MpuDataIn
 
       cmdDisp.compCmdSend[20] -> payload.cmdIn
       payload.cmdRegOut -> cmdDisp.compCmdReg
