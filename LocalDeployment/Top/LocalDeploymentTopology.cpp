@@ -60,7 +60,8 @@ enum TopologyConstants {
     DEFRAMER_BUFFER_COUNT = 30,
     COM_DRIVER_BUFFER_SIZE = 3000,
     COM_DRIVER_BUFFER_COUNT = 30,
-    BUFFER_MANAGER_ID = 200
+    BUFFER_MANAGER_ID = 200,
+    MOTION_SENSOR_I2C_ADDRESS = 0x6B,
 };
 
 // Ping entries are autocoded, however; this code is not properly exported. Thus, it is copied here.
@@ -99,7 +100,8 @@ void configureTopology() {
             "I2C Failed to open\n"
         );
     }
-    
+    const Drv::I2cStatus sensorStatus =
+    mpu.configure(MOTION_SENSOR_I2C_ADDRESS);
     
     // Command sequencer needs to allocate memory to hold contents of command sequences
     cmdSeq.allocateBuffer(0, mallocator, CMD_SEQ_BUFFER_SIZE);

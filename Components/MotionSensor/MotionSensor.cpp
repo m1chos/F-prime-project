@@ -114,7 +114,8 @@ Drv::I2cStatus MotionSensor ::
         NATIVE_UINT_TYPE context
     )
   {
-    if (i2c_status) {
+
+   if (i2c_status) {
    #ifdef _BOARD_RPIPICO 
   
     this->mpu->update();
@@ -136,6 +137,42 @@ Drv::I2cStatus MotionSensor ::
     #endif
     this->MpuDataOut_out(0, acc_data);
    }
+  }
+
+  Drv::I2cStatus MotionSensor :: configure(
+        U32 i2cAddress
+    )
+  {
+    this->m_i2cAddress = i2cAddress;
+
+    U8 whoAmI = 0;
+
+    const Drv::I2cStatus status =
+        this->readRegister(
+            QMI8658_WHO_AM_I_REG,
+            whoAmI
+        );
+
+    if (
+        status == Drv::I2cStatus::I2C_OK &&
+        whoAmI == QMI8658_WHO_AM_I_VALUE
+    ) {
+        this->m_usesSimulation = false;
+
+        this->tlmWrite_connected(true);
+        this->log_ACTIVITY_HI_SensorDetected();
+    } else {
+        this->m_usesSimulation = true;
+
+        this->tlmWrite_connected(false);
+        this->log_WARNING_HI_SimulationEnabled();
+
+         if (status != Drv::I2cStatus::I2C_OK) {
+        return status;
+        }
+
+        return Drv::I2cStatus::I2C_OTHER_ERR;
+        }
   }
 
   #ifdef _BOARD_RPIPICO

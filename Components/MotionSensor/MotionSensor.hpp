@@ -51,6 +51,10 @@ namespace Components {
           const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
       );
 
+      Drv::I2cStatus configure(
+           U32 i2cAddress
+      );
+
       //! Destroy object MotionSensor
       //!
       ~MotionSensor();
@@ -91,8 +95,8 @@ namespace Components {
         U8 value
       );
 
-      U32 m_i2cAddress = QMI8658_I2C_ADDRESS; 
-      
+      U32 m_i2cAddress = 0; 
+      bool m_usesSimulation = true;
       
       
       I8 dominantAxis = 0;

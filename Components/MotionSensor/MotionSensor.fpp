@@ -17,6 +17,14 @@ format "MPU not found"
 event MpuInitSucc severity activity high \
 format "MPU found"
 
+@ Waveshare MPU detected successfully
+event SensorDetected severity activity high \
+format "QMI8658C detected"
+
+@ Real sensor unavailable, simulation enabled
+event SimulationEnabled severity warning high \
+format "QMI8658C not detected; simulation enabled"
+
 @ X, Y, Z acceleration from accelerometer
 telemetry accelerometer: Vector id 0 update always format "{} g"
 
