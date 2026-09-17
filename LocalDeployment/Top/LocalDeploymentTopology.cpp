@@ -15,6 +15,9 @@
 // Used for 1Hz synthetic cycling
 #include <Os/Mutex.hpp>
 
+// Used for diagnostics
+#include <Fw/Logger/Logger.hpp>
+
 // Allows easy reference to objects in FPP/autocoder required namespaces
 using namespace LocalDeployment;
 
@@ -84,6 +87,20 @@ Svc::Health::PingEntry pingEntries[] = {
  * desired, but is extracted here for clarity.
  */
 void configureTopology() {
+    
+    const bool i2cOpened = i2cDriver.open("/dev/i2c-1");
+
+    if (i2cOpened) {
+        Fw::Logger::logMsg(
+            "I2C Opened successfully\n"
+        );
+    } else {
+        Fw::Logger::logMsg(
+            "I2C Failed to open\n"
+        );
+    }
+    
+    
     // Command sequencer needs to allocate memory to hold contents of command sequences
     cmdSeq.allocateBuffer(0, mallocator, CMD_SEQ_BUFFER_SIZE);
 
