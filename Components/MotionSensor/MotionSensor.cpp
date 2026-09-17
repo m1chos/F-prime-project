@@ -60,7 +60,55 @@ void MotionSensor ::
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
 
-  void MotionSensor ::
+  Drv::I2cStatus MotionSensor ::
+    readRegister(
+        U8 reg,
+        U8& value
+    )
+{
+    U8 registerAddress = reg;
+
+    Fw::Buffer writeBuffer(
+        &registerAddress,
+        sizeof(registerAddress)
+    );
+
+    Fw::Buffer readBuffer(
+        &value,
+        sizeof(value)
+    );
+
+    return this->busWriteRead_out(
+        0,
+        this->m_i2cAddress,
+        writeBuffer,
+        readBuffer
+    );
+}
+
+Drv::I2cStatus MotionSensor ::
+    writeRegister(
+        U8 reg,
+        U8 value
+    )
+{
+    U8 data[2] = {
+        reg,
+        value
+    };
+
+    Fw::Buffer writeBuffer(
+        data,
+        sizeof(data)
+    );
+
+    return this->busWrite_out(
+        0,
+        this->m_i2cAddress,
+        writeBuffer
+    );
+}
+   void MotionSensor ::
     run_handler(
         NATIVE_INT_TYPE portNum,
         NATIVE_UINT_TYPE context

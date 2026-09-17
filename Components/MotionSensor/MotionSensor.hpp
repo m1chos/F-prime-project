@@ -77,7 +77,25 @@ namespace Components {
           NATIVE_UINT_TYPE context 
       );
 
-       I8 dominantAxis = 0;
+      static constexpr U32 QMI8658_I2C_ADDRESS = 0x6B;
+      static constexpr U8 QMI8658_WHO_AM_I_REG = 0x00;
+      static constexpr U8 QMI8658_WHO_AM_I_VALUE = 0x05;
+
+      Drv::I2cStatus readRegister(
+        U8 reg,
+        U8& value
+      );
+
+      Drv::I2cStatus writeRegister(
+        U8 reg,
+        U8 value
+      );
+
+      U32 m_i2cAddress = QMI8658_I2C_ADDRESS; 
+      
+      
+      
+      I8 dominantAxis = 0;
       
       Components::Vector acc_data;
       AccelData a;

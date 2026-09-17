@@ -41,6 +41,7 @@ module LocalDeployment {
     instance rateGroupDriver
     instance textLogger
     instance systemResources
+    instance i2cDriver
 
     instance mpu
     instance payload
@@ -150,6 +151,9 @@ module LocalDeployment {
 
       payload.tlmOut -> tlmSend.TlmRecv
       payload.logOut -> eventLogger.LogRecv
+
+      mpu.busWrite -> i2cDriver.write
+      mpu.busWriteRead -> i2cDriver.writeRead
 
     }
 

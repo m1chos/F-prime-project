@@ -121,6 +121,8 @@ module LocalDeployment {
 
   instance comStub: Svc.ComStub base id 0x4B00
 
+  instance i2cDriver: Drv.LinuxI2cDriver base id 0x4C00
+
   instance mpu: Components.MotionSensor base id 0x11000
   instance payload: Components.Payload base id 0x12000 \
   queue size 10 stack size 4096 priority 100

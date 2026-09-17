@@ -17,6 +17,7 @@ set(MOD_DEPS
   # Communication Implementations
   Drv/Udp
   Drv/TcpClient
+  Drv/LinuxI2cDriver
 )
 
 register_fprime_module()

@@ -5,6 +5,10 @@ passive component MotionSensor {
 sync input port run: Svc.Sched
 output port MpuDataOut: MPU_data
 
+output port busWriteRead: Drv.I2cWriteRead
+
+output port busWrite: Drv.I2c
+
 @ Failed to initialize I2C
 event MpuInitFail severity warning high \
 format "MPU not found"
