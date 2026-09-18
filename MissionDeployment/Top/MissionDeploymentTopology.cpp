@@ -72,8 +72,7 @@ void setupTopology(const TopologyState& state) {
     // Autocoded task kick-off (active components). Function provided by autocoder.
     startTasks(state);
     // Initialize MPU instances
-    mpu.init_i2c();
-
+    
     rateDriver.configure(1);
     commDriver.configure(&Serial);
 

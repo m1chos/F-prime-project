@@ -9,24 +9,17 @@
 
 #include "Components/MotionSensor/MotionSensorComponentAc.hpp"
 
-#ifdef _BOARD_RPIPICO
-#include "FastIMU.h"
-#include <Wire.h>
-#define IMU_ADDRESS 0x68
-#endif
-
 #include <chrono>
 #include <random>
 
 namespace Components {
 
-  #ifndef _BOARD_RPIPICO
    struct AccelData {
     F32 accelX;
     F32 accelY;
     F32 accelZ;
    };
-  #endif
+  
   class MotionSensor :
     public MotionSensorComponentBase
   {
@@ -62,10 +55,6 @@ namespace Components {
       // Custom Functions
       // ----------------------------------------------------------------------
 
-      
-      #ifdef _BOARD_RPIPICO
-      void init_i2c();
-      #endif
 
     PRIVATE:
 
@@ -122,13 +111,7 @@ namespace Components {
       );
 
       Drv::I2cStatus configureAccelerometer();
-      
-#ifdef _BOARD_RPIPICO
-      bool i2c_status = false;
-      calData calib = { 0 };
-      MPU6050* mpu = nullptr;
-#endif
-      
+            
       F32 dominantValue;
       F32 otherValue;
       std::mt19937 randomGenerator;

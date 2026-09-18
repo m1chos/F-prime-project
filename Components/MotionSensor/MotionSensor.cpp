@@ -16,20 +16,14 @@ namespace Components {
   MotionSensor ::
     MotionSensor(
         const char *const compName
-    ) : MotionSensorComponentBase(compName)
-#ifndef _BOARD_RPIPICO
-                                        ,a{0.0, 0.0, 0.0},
-                                        randomGenerator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count())),
-                                        distribution(-1.1, 1.1)
-#endif
-  {
-#ifndef _BOARD_RPIPICO
-    update();
-#endif
+    ) : MotionSensorComponentBase(compName),
+        a{0.0, 0.0, 0.0},
+        randomGenerator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count())),
+        distribution(-1.1, 1.1)
 
-#ifdef _BOARD_RPIPICO
-   this->mpu = new MPU6050();
-#endif
+  {
+
+    update();
 
 }
 
@@ -45,11 +39,7 @@ void MotionSensor ::
   MotionSensor ::
     ~MotionSensor()
   {
-    #ifdef _BOARD_RPIPICO
-      if (this->mpu != nullptr) {
-          delete this->mpu;
-      }
-    #endif  
+     
   }
 
   // ----------------------------------------------------------------------
@@ -289,24 +279,6 @@ Drv::I2cStatus MotionSensor ::
     return Drv::I2cStatus::I2C_OK;
 }
 
-  #ifdef _BOARD_RPIPICO
-  void MotionSensor::init_i2c(void) {
-
-    Wire.begin();             
-    Wire.setClock(400000UL); 
-
-    if (mpu->init(calib, IMU_ADDRESS) != 0) {
-    this->i2c_status = false;
-    this->log_WARNING_HI_MpuInitFail();
-    this->tlmWrite_connected(false);
-} else {
-    this->i2c_status = true;
-    this->tlmWrite_connected(true);
-    this->log_ACTIVITY_HI_MpuInitSucc();
-}
-  }
-#endif
- 
 void MotionSensor ::
     update()
 {

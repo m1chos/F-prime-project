@@ -1,5 +1,5 @@
 module Components {
-@ Component for MPU6050
+@ Motion sensor device manager
 passive component MotionSensor {
 
 sync input port run: Svc.Sched
