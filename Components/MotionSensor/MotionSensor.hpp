@@ -84,7 +84,15 @@ namespace Components {
       static constexpr U32 QMI8658_I2C_ADDRESS = 0x6B;
       static constexpr U8 QMI8658_WHO_AM_I_REG = 0x00;
       static constexpr U8 QMI8658_WHO_AM_I_VALUE = 0x05;
-
+      static constexpr U8 QMI8658_ACCEL_X_L_REG = 0x35;
+      static constexpr U32 QMI8658_ACCEL_DATA_SIZE = 6;
+      static constexpr F32 QMI8658_ACCEL_SCALE = 16384.0f;
+      static constexpr U8 QMI8658_CTRL2_REG = 0x03;
+      static constexpr U8 QMI8658_CTRL7_REG = 0x08;
+      static constexpr U8 QMI8658_ACCEL_RANGE_2G = 0x00;
+      static constexpr U8 QMI8658_ACCEL_ODR_125HZ = 0x06;
+      static constexpr U8 QMI8658_ACCEL_ENABLE = 0x01;
+ 
       Drv::I2cStatus readRegister(
         U8 reg,
         U8& value
@@ -95,6 +103,12 @@ namespace Components {
         U8 value
       );
 
+      Drv::I2cStatus readRegisterblock(
+      U8 startRegister,
+      U8* data,
+      U32 size
+      );
+
       U32 m_i2cAddress = 0; 
       bool m_usesSimulation = true;
       
@@ -103,6 +117,12 @@ namespace Components {
       
       Components::Vector acc_data;
       AccelData a;
+
+      Drv::I2cStatus readAcceleration(
+      AccelData& acceleration
+      );
+
+      Drv::I2cStatus configureAccelerometer();
       
 #ifdef _BOARD_RPIPICO
       bool i2c_status = false;

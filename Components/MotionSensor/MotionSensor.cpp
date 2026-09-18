@@ -139,41 +139,153 @@ Drv::I2cStatus MotionSensor ::
    }
   }
 
-  Drv::I2cStatus MotionSensor :: configure(
+  Drv::I2cStatus MotionSensor ::
+    configure(
         U32 i2cAddress
     )
-  {
+{
     this->m_i2cAddress = i2cAddress;
 
     U8 whoAmI = 0;
 
-    const Drv::I2cStatus status =
+    Drv::I2cStatus status =
         this->readRegister(
             QMI8658_WHO_AM_I_REG,
             whoAmI
         );
 
     if (
-        status == Drv::I2cStatus::I2C_OK &&
-        whoAmI == QMI8658_WHO_AM_I_VALUE
+        status != Drv::I2cStatus::I2C_OK ||
+        whoAmI != QMI8658_WHO_AM_I_VALUE
     ) {
-        this->m_usesSimulation = false;
-
-        this->tlmWrite_connected(true);
-        this->log_ACTIVITY_HI_SensorDetected();
-    } else {
         this->m_usesSimulation = true;
 
         this->tlmWrite_connected(false);
         this->log_WARNING_HI_SimulationEnabled();
 
-         if (status != Drv::I2cStatus::I2C_OK) {
-        return status;
+        if (status != Drv::I2cStatus::I2C_OK) {
+            return status;
         }
 
         return Drv::I2cStatus::I2C_OTHER_ERR;
-        }
-  }
+    }
+
+    status = this->configureAccelerometer();
+
+    if (status != Drv::I2cStatus::I2C_OK) {
+        this->m_usesSimulation = true;
+
+        this->tlmWrite_connected(false);
+        this->log_WARNING_HI_SimulationEnabled();
+
+        return status;
+    }
+
+    this->m_usesSimulation = false;
+
+    this->tlmWrite_connected(true);
+    this->log_ACTIVITY_HI_SensorDetected();
+
+    return Drv::I2cStatus::I2C_OK;
+}
+
+  Drv::I2cStatus MotionSensor ::
+    readRegisterblock(
+        U8 startRegister,
+        U8* data,
+        U32 size
+    )
+{
+    Fw::Buffer writeBuffer(
+        &startRegister,
+        sizeof(startRegister)
+    );
+
+    Fw::Buffer readBuffer(
+        data,
+        size
+    );
+
+    return this->busWriteRead_out(
+        0,
+        this->m_i2cAddress,
+        writeBuffer,
+        readBuffer
+    );
+}
+
+    Drv::I2cStatus MotionSensor ::
+      configureAccelerometer()
+{
+    const U8 accelConfig =
+        QMI8658_ACCEL_RANGE_2G |
+        QMI8658_ACCEL_ODR_125HZ;
+
+    Drv::I2cStatus status =
+        this->writeRegister(
+            QMI8658_CTRL2_REG,
+            accelConfig
+        );
+
+    if (status != Drv::I2cStatus::I2C_OK) {
+        return status;
+    }
+
+    return this->writeRegister(
+        QMI8658_CTRL7_REG,
+        QMI8658_ACCEL_ENABLE
+    );
+}    
+
+
+
+    Drv::I2cStatus MotionSensor ::
+      readAcceleration(
+        AccelData& acceleration
+    )
+{
+    U8 data[QMI8658_ACCEL_DATA_SIZE] = {};
+
+    const Drv::I2cStatus status =
+        this->readRegisterblock(
+            QMI8658_ACCEL_X_L_REG,
+            data,
+            sizeof(data)
+        );
+
+    if (status != Drv::I2cStatus::I2C_OK) {
+        return status;
+    }
+
+    const I16 rawX =
+        static_cast<I16>(
+            (static_cast<U16>(data[1]) << 8) |
+             static_cast<U16>(data[0])
+        );
+
+    const I16 rawY =
+        static_cast<I16>(
+            (static_cast<U16>(data[3]) << 8) |
+             static_cast<U16>(data[2])
+        );
+
+    const I16 rawZ =
+        static_cast<I16>(
+            (static_cast<U16>(data[5]) << 8) |
+             static_cast<U16>(data[4])
+        );
+
+    acceleration.accelX =
+        static_cast<F32>(rawX) / QMI8658_ACCEL_SCALE;
+
+    acceleration.accelY =
+        static_cast<F32>(rawY) / QMI8658_ACCEL_SCALE;
+
+    acceleration.accelZ =
+        static_cast<F32>(rawZ) / QMI8658_ACCEL_SCALE;
+
+    return Drv::I2cStatus::I2C_OK;
+}
 
   #ifdef _BOARD_RPIPICO
   void MotionSensor::init_i2c(void) {
