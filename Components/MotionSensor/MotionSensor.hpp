@@ -13,11 +13,10 @@
 #include "FastIMU.h"
 #include <Wire.h>
 #define IMU_ADDRESS 0x68
+#endif
 
-#else 
 #include <chrono>
 #include <random>
-#endif
 
 namespace Components {
 
@@ -128,8 +127,8 @@ namespace Components {
       bool i2c_status = false;
       calData calib = { 0 };
       MPU6050* mpu = nullptr;
-#else
-      bool i2c_status = true;
+#endif
+      
       F32 dominantValue;
       F32 otherValue;
       std::mt19937 randomGenerator;
@@ -138,7 +137,7 @@ namespace Components {
 
       void update();
       void getAccel(AccelData* data);
-#endif
+
   };
 
 }

@@ -113,32 +113,34 @@ Drv::I2cStatus MotionSensor ::
         NATIVE_INT_TYPE portNum,
         NATIVE_UINT_TYPE context
     )
-  {
+{
+    if (this->m_usesSimulation) {
+        this->update();
+        this->getAccel(&a);
+    }
+    else {
+        const Drv::I2cStatus status =
+            this->readAcceleration(a);
 
-   if (i2c_status) {
-   #ifdef _BOARD_RPIPICO 
-  
-    this->mpu->update();
-    this->mpu->getAccel(&a);
-   #else
-   update();
-   getAccel(&a);
-   #endif
+        if (status != Drv::I2cStatus::I2C_OK) {
+            this->tlmWrite_connected(false);
+            return;
+        }
+
+        this->tlmWrite_connected(true);
+    }
 
     acc_data[0] = a.accelX;
     acc_data[1] = a.accelY;
     acc_data[2] = a.accelZ;
-    
-    
-    this->tlmWrite_accelerometer(acc_data);
-    
-    #ifdef _BOARD_RPIPICO
-    this->tlmWrite_tempC(mpu->getTemp());
-    #endif
-    this->MpuDataOut_out(0, acc_data);
-   }
-  }
 
+    this->tlmWrite_accelerometer(acc_data);
+
+    this->MpuDataOut_out(
+        0,
+        acc_data
+    );
+}
   Drv::I2cStatus MotionSensor ::
     configure(
         U32 i2cAddress
@@ -303,37 +305,55 @@ Drv::I2cStatus MotionSensor ::
     this->log_ACTIVITY_HI_MpuInitSucc();
 }
   }
-#else
-  void MotionSensor ::
-      update()
-  {
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastSwitchTime).count();
-
-  
-    if (elapsed >= 10) {
-      dominantAxis = randomGenerator() % 3;
-      lastSwitchTime = now;
-    }
-
-    
-    dominantValue = std::uniform_real_distribution<F32>(0.9, 1.1)(randomGenerator);
-    otherValue = std::uniform_real_distribution<F32>(-0.1, 0.1)(randomGenerator);
-
-    a.accelX = (dominantAxis == 0) ? dominantValue : otherValue;
-    a.accelY = (dominantAxis == 1) ? dominantValue : otherValue;
-    a.accelZ = (dominantAxis == 2) ? dominantValue : otherValue;
-  }
-  
-  void MotionSensor ::
-      getAccel(
-          AccelData *data)
-  {
-    if (data)
-    {
-      *data = a;
-    }
-  }
 #endif
+ 
+void MotionSensor ::
+    update()
+{
+    auto now = std::chrono::steady_clock::now();
+
+    auto elapsed =
+        std::chrono::duration_cast<std::chrono::seconds>(
+            now - lastSwitchTime
+        ).count();
+
+    if (elapsed >= 10) {
+        dominantAxis = randomGenerator() % 3;
+        lastSwitchTime = now;
+    }
+
+    dominantValue =
+        std::uniform_real_distribution<F32>(
+            0.9,
+            1.1
+        )(randomGenerator);
+
+    otherValue =
+        std::uniform_real_distribution<F32>(
+            -0.1,
+            0.1
+        )(randomGenerator);
+
+    a.accelX =
+        (dominantAxis == 0) ? dominantValue : otherValue;
+
+    a.accelY =
+        (dominantAxis == 1) ? dominantValue : otherValue;
+
+    a.accelZ =
+        (dominantAxis == 2) ? dominantValue : otherValue;
+}
+
+
+void MotionSensor ::
+    getAccel(
+        AccelData* data
+    )
+{
+    if (data != nullptr) {
+        *data = a;
+    }
+}
+
 
 }
