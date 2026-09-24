@@ -17,7 +17,7 @@ namespace Components {
     MotionSensor(
         const char *const compName
     ) : MotionSensorComponentBase(compName),
-        a{0.0, 0.0, 0.0},
+        accelerationSample{0.0, 0.0, 0.0},
         randomGenerator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count())),
         distribution(-1.1, 1.1)
 
@@ -106,11 +106,11 @@ Drv::I2cStatus MotionSensor ::
 {
     if (this->m_usesSimulation) {
         this->update();
-        this->getAccel(&a);
+        this->getAccel(&accelerationSample);
     }
     else {
         const Drv::I2cStatus status =
-            this->readAcceleration(a);
+            this->readAcceleration(accelerationSample);
 
         if (status != Drv::I2cStatus::I2C_OK) {
             this->tlmWrite_connected(false);
@@ -120,9 +120,9 @@ Drv::I2cStatus MotionSensor ::
         this->tlmWrite_connected(true);
     }
 
-    acc_data[0] = a.accelX;
-    acc_data[1] = a.accelY;
-    acc_data[2] = a.accelZ;
+    acc_data[0] = accelerationSample.accelX;
+    acc_data[1] = accelerationSample.accelY;
+    acc_data[2] = accelerationSample.accelZ;
 
     this->tlmWrite_accelerometer(acc_data);
 
@@ -182,7 +182,7 @@ Drv::I2cStatus MotionSensor ::
 }
 
   Drv::I2cStatus MotionSensor ::
-    readRegisterblock(
+    readRegisterBlock(
         U8 startRegister,
         U8* data,
         U32 size
@@ -239,7 +239,7 @@ Drv::I2cStatus MotionSensor ::
     U8 data[QMI8658_ACCEL_DATA_SIZE] = {};
 
     const Drv::I2cStatus status =
-        this->readRegisterblock(
+        this->readRegisterBlock(
             QMI8658_ACCEL_X_L_REG,
             data,
             sizeof(data)
@@ -306,13 +306,13 @@ void MotionSensor ::
             0.1
         )(randomGenerator);
 
-    a.accelX =
+    accelerationSample.accelX =
         (dominantAxis == 0) ? dominantValue : otherValue;
 
-    a.accelY =
+    accelerationSample.accelY =
         (dominantAxis == 1) ? dominantValue : otherValue;
 
-    a.accelZ =
+    accelerationSample.accelZ =
         (dominantAxis == 2) ? dominantValue : otherValue;
 }
 
@@ -323,7 +323,7 @@ void MotionSensor ::
     )
 {
     if (data != nullptr) {
-        *data = a;
+        *data = accelerationSample;
     }
 }
 

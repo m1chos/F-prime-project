@@ -91,7 +91,7 @@ namespace Components {
         U8 value
       );
 
-      Drv::I2cStatus readRegisterblock(
+      Drv::I2cStatus readRegisterBlock(
       U8 startRegister,
       U8* data,
       U32 size
@@ -104,7 +104,7 @@ namespace Components {
       I8 dominantAxis = 0;
       
       Components::Vector acc_data;
-      AccelData a;
+      AccelData accelerationSample;
 
       Drv::I2cStatus readAcceleration(
       AccelData& acceleration
