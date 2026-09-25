@@ -9,8 +9,6 @@
 
 #include "Components/HumSensor/HumSensorComponentAc.hpp"
 
-#include <chrono>
-#include <random>
 #include "Drv/I2cDriverPorts/I2cStatusEnumAc.hpp"
 #include "Os/Task.hpp"
 
@@ -77,26 +75,11 @@ namespace Components {
       Components::HumVector hum_data;
       HumData h;
       
-#ifdef _BOARD_RPIPICO
-      bool i2c_status = false;
-      calData calib = { 0 };
-#else
-      bool i2c_status = true;
-      F32 humValue;
-      std::mt19937 randomGenerator;
-      std::uniform_real_distribution<F32> distribution;
-      std::chrono::steady_clock::time_point lastSwitchTime = std::chrono::steady_clock::now();
-      F32 currentHumidity;
-      F32 targetHumidity;
+  F32 currentHumidity = 50.0f;
+  U32 simulationStep = 0;
 
-      void update();
-      void getHum(HumData* data);
-#endif
-
-
-
-
-
+  void update();
+  void getHum(HumData* data);
 
   };
 

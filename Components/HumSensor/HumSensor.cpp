@@ -13,20 +13,12 @@ namespace Components {
   // Component construction and destruction
   // ----------------------------------------------------------------------
 
-  HumSensor ::
-    HumSensor(const char* const compName) :
-      HumSensorComponentBase(compName)
-#ifndef _BOARD_RPIPICO
-                  , i2c_status(true),
-                  h{0},
-                  randomGenerator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count())),
-                  distribution(0, 100)
-#endif
-{
-#ifndef _BOARD_RPIPICO
-    update();
-#endif
-}
+  HumSensor::HumSensor(const char* const compName) :
+    HumSensorComponentBase(compName),
+    h{0}
+  {
+    this->update();
+  }
 
   HumSensor ::
     ~HumSensor()
@@ -247,76 +239,56 @@ namespace Components {
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
 
-  void HumSensor ::
-    run_handler(
-        NATIVE_INT_TYPE portNum,
-        NATIVE_UINT_TYPE context
-    )
-  {
-    if(i2c_status){
-     #ifdef _BOARD_RPIPICO
-          hum->update();
-          hum->getHum(&h);
-     #else 
-          update();
-          getHum(&h);
-     #endif
-          hum_data[0] = h.hum;
+  void HumSensor::run_handler(
+    NATIVE_INT_TYPE portNum,
+    NATIVE_UINT_TYPE context
+)
+{
+    if (this->m_usesSimulation) {
+        this->update();
+        this->getHum(&h);
+    }
+    else {
+        const Drv::I2cStatus status =
+            this->readMeasurement(h);
 
-          this->tlmWrite_humidity(hum_data);
-          this->HumDataOut_out(0, hum_data);
+        if (status != Drv::I2cStatus::I2C_OK) {
+            return;
+        }
+    }
+
+    hum_data[0] = h.hum;
+
+    this->tlmWrite_humidity(hum_data);
+    this->HumDataOut_out(0, hum_data);
+}
+
+  void HumSensor::update()
+  {
+    const F32 phase =
+        static_cast<F32>(this->simulationStep % 40);
+
+    if (phase < 20.0f) {
+        this->currentHumidity =
+            45.0f + (phase * 0.5f);
+    }
+    else {
+        this->currentHumidity =
+            55.0f - ((phase - 20.0f) * 0.5f);
+    }
+
+    this->h.hum = this->currentHumidity;
+    this->simulationStep++;
+  }
+
+  void HumSensor::getHum(HumData* data)
+  {
+    if (data != nullptr) {
+        *data = this->h;
     }
   }
 
-#ifdef _BOARD_RPIPICO
-  void HumSensor ::
-      init_i2c()
-  {
-    Wire.begin();
-    Wire.setClock(400000L);
 
-    if (hum->init(calib, HUM_ADDRESS) != 0)
-    {
-      i2c_status = false;
-      this->log_WARNING_HI_HumInitFail();
-    }
-    else
-    {
-      i2c_status = true;
-      this->log_ACTIVITY_HI_HumInitSucc();
-    }
-  }
-#else
-  void HumSensor ::
-      update()
-  {
-    
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastSwitchTime).count();
-
-    if (elapsed >= 15) {
-      targetHumidity = std::uniform_real_distribution<F32>(10.0, 90.0)(randomGenerator);
-      lastSwitchTime = now;
-    }
-
-    currentHumidity += (targetHumidity - currentHumidity) * 0.1f;
-
-    F32 noise = std::uniform_real_distribution<F32>(-0.3f, 0.3f)(randomGenerator);
-
-    h.hum = currentHumidity + noise;
-  }
-    
-    
-  void HumSensor ::
-      getHum(
-          HumData *data)
-  {
-    if (data)
-    {
-      *data = h;
-    }
-  }
-#endif
 }
 
 
