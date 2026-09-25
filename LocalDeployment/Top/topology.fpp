@@ -155,6 +155,9 @@ module LocalDeployment {
       mpu.busWrite -> i2cDriver.write
       mpu.busWriteRead -> i2cDriver.writeRead
 
+      hum.busWrite -> i2cDriver.write
+      hum.busRead -> i2cDriver.read
+
     }
 
   }

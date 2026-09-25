@@ -3,14 +3,25 @@ module Components {
     passive component HumSensor {
           
         sync input port run: Svc.Sched
+        
         output port HumDataOut: [4] HUM_data
 
+        output port busWrite: Drv.I2c
+
+        output port busRead: Drv.I2c
+        
         event HumInitFail severity warning high \
         format "Humidity Sensor not found"
 
         event HumInitSucc severity activity high \
         format "Humidity Sensor found"
 
+        event SensorDetected severity activity high \
+        format "SHTC3 detected"
+
+        event SimulationEnabled severity warning high \
+        format "SHTC3 not detected; simulation enabled"
+        
         telemetry humidity: HumVector id 0 update always format "{}"
 
 
