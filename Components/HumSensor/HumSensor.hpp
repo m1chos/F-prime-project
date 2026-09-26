@@ -69,9 +69,7 @@ namespace Components {
           NATIVE_INT_TYPE portNum, //!< The port number
           NATIVE_UINT_TYPE context //!< The call order
       );
-
- I8 humarea = 0;
-      
+     
       Components::HumVector hum_data;
       HumData h;
       

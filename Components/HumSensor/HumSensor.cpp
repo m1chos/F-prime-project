@@ -89,18 +89,19 @@ namespace Components {
 
       return crc;
     }
-
     Drv::I2cStatus HumSensor ::
     readSensorId(
         U16& sensorId
-    )
-  {
+      )
+    {
     Drv::I2cStatus status =
         this->writeCommand(SHTC3_READ_ID_COMMAND);
 
     if (status != Drv::I2cStatus::I2C_OK) {
         return status;
     }
+
+    Os::Task::delay(1);
 
     U8 data[SHTC3_ID_DATA_SIZE] = {};
 
@@ -113,7 +114,10 @@ namespace Components {
         return status;
     }
 
-    if (this->calculateCrc(data, 2) != data[2]) {
+    const U8 calculatedCrc =
+        this->calculateCrc(data, 2);
+
+    if (calculatedCrc != data[2]) {
         return Drv::I2cStatus::I2C_OTHER_ERR;
     }
 
@@ -134,15 +138,27 @@ namespace Components {
   }
 
   Drv::I2cStatus HumSensor ::
-    configure(
-        U32 i2cAddress
-    )
-  {
+configure(
+    U32 i2cAddress
+)
+{
     this->m_i2cAddress = i2cAddress;
+
+    Drv::I2cStatus status =
+        this->writeCommand(SHTC3_WAKEUP_COMMAND);
+
+    if (status != Drv::I2cStatus::I2C_OK) {
+        this->m_usesSimulation = true;
+        this->log_WARNING_HI_SimulationEnabled();
+
+        return status;
+    }
+
+    Os::Task::delay(1);
 
     U16 sensorId = 0;
 
-    Drv::I2cStatus status =
+    status =
         this->readSensorId(sensorId);
 
     if (status != Drv::I2cStatus::I2C_OK) {
@@ -166,7 +182,7 @@ namespace Components {
     this->log_ACTIVITY_HI_SensorDetected();
 
     return Drv::I2cStatus::I2C_OK;
-  }
+}
 
 
   Drv::I2cStatus HumSensor ::

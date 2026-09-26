@@ -10,12 +10,6 @@ module Components {
 
         output port busRead: Drv.I2c
         
-        event HumInitFail severity warning high \
-        format "Humidity Sensor not found"
-
-        event HumInitSucc severity activity high \
-        format "Humidity Sensor found"
-
         event SensorDetected severity activity high \
         format "SHTC3 detected"
 

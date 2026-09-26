@@ -35,7 +35,7 @@ namespace Components {
 
     static const U8 FILTER_SIZE = 10;
     static constexpr F32 HUM_LIMIT_LOW = 20.0; 
-    static constexpr F32 HUM_LIMIT_HIGH = 60.0;
+    static constexpr F32 HUM_LIMIT_HIGH = 30.0;
 
     std::array<F32, FILTER_SIZE> accDataArrayX = {};
     std::array<F32, FILTER_SIZE> accDataArrayY = {};

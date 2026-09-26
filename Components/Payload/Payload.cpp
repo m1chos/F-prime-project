@@ -141,7 +141,7 @@ void Payload::HumDataIn_handler(NATIVE_INT_TYPE portNum, const Components::HumVe
 
     this->h_counter = (this->h_counter + 1) % FILTER_SIZE;
 
-    avgHumidity = calculateAverage(this->hum_data, this->m_humSampleCount);
+    avgHumidity[0] = calculateAverage(this->hum_data, this->m_humSampleCount);
        
       this->tlmWrite_avgHum(avgHumidity);
       }  
