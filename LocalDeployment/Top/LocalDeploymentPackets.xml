@@ -90,9 +90,11 @@
         <channel name="payload.GreenLedState"/>
         <channel name="payload.YellowLedState"/>
         <channel name="payload.avgHum"/>
+        <channel name="payload.avgTemp"/>
     </packet>
     <packet name="HUM" id="12" level="1">
         <channel name="hum.humidity"/>
+        <channel name="hum.temperature"/>
     </packet>
 
 

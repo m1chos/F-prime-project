@@ -17,6 +17,7 @@ namespace Components {
 
   struct HumData {
     F32 hum;
+    F32 temp;
   };
 
   class HumSensor :
@@ -49,6 +50,9 @@ namespace Components {
       static constexpr U32 SHTC3_MEASUREMENT_DATA_SIZE = 6;
       static constexpr U32 SHTC3_ID_DATA_SIZE = 3;
 
+      static constexpr F32 SHTC3_TEMP_MIN_C = -40.0f;
+      static constexpr F32 SHTC3_TEMP_MAX_C = 125.0f;
+
       Drv::I2cStatus writeCommand(U16 command);
       Drv::I2cStatus readData(U8* data, U32 size);
       Drv::I2cStatus readMeasurement(HumData& measurement);
@@ -58,7 +62,7 @@ namespace Components {
 
       U32 m_i2cAddress = 0;
       bool m_usesSimulation = true;
-
+      bool m_temperatureOutOfRange = false;
       
       // ----------------------------------------------------------------------
       // Handler implementations for user-defined typed input ports
@@ -71,9 +75,11 @@ namespace Components {
       );
      
       Components::HumVector hum_data;
+      Components::TempVector temp_data;
       HumData h;
       
   F32 currentHumidity = 50.0f;
+  F32 currentTemperature = 25.0f;
   U32 simulationStep = 0;
 
   void update();

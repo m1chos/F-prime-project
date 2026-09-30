@@ -36,14 +36,18 @@ namespace Components {
     static const U8 FILTER_SIZE = 10;
     static constexpr F32 HUM_LIMIT_LOW = 20.0; 
     static constexpr F32 HUM_LIMIT_HIGH = 30.0;
+    static constexpr F32 TEMP_LIMIT_LOW = 0.0f; 
+    static constexpr F32 TEMP_LIMIT_HIGH = 30.0f;
 
     std::array<F32, FILTER_SIZE> accDataArrayX = {};
     std::array<F32, FILTER_SIZE> accDataArrayY = {};
     std::array<F32, FILTER_SIZE> accDataArrayZ = {};
     std::array<F32, FILTER_SIZE> hum_data = {};
+    std::array<F32, FILTER_SIZE> temp_data = {};
 
     Components::Vector avgAcceleration = {};
     Components::HumVector avgHumidity = {};
+    Components::TempVector avgTemperature = {};
     
     F32 calculateAverage(const std::array<F32, FILTER_SIZE>& dataArray, U8 sampleCount) const;
 
@@ -54,9 +58,11 @@ namespace Components {
 
     U8 m_accSampleCount = 0;
     U8 m_humSampleCount = 0;
+    U8 m_tempSampleCount = 0;
 
     NATIVE_INT_TYPE m_counter = 0;
     NATIVE_INT_TYPE h_counter = 0;
+    NATIVE_INT_TYPE t_counter = 0;
     void StartPayload_cmdHandler(FwOpcodeType opCode,U32 cmdSeq, Fw::On on_off);
 
    Fw::Logic GreenLedState = Fw::Logic::LOW;
@@ -71,7 +77,8 @@ namespace Components {
  
       void HumDataIn_handler(
         NATIVE_INT_TYPE portNum, 
-        const Components::HumVector &humidity 
+        const Components::HumVector &humidity,
+        const Components::TempVector &temperature
     );
 
     void run_handler(
@@ -82,6 +89,8 @@ namespace Components {
      void acceleration_led_handler();
 
      void humidity_led_handler();
+
+     void temperature_led_handler();
 
 
   };

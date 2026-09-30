@@ -27,6 +27,7 @@ module Components {
 
         telemetry avgAcc: Vector id 0
         telemetry avgHum: HumVector id 1
+        telemetry avgTemp: TempVector id 2
         
         telemetry State: Fw.On id 20
 
@@ -37,6 +38,8 @@ module Components {
         event DominantAxisChanged(axis: Axis) severity activity high format "Dominant axis changed to {}"
 
         event HumidityDanger(avghumidity: HumVector) severity activity high format "Humidity is on dangerous levels: {}"
+
+        event TemperatureDanger(avgtemperature: TempVector) severity activity high format "Temperature is on dangerous levels: {}"
 
         enum Axis{
             X,

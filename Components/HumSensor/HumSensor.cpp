@@ -238,6 +238,19 @@ configure(
         return Drv::I2cStatus::I2C_OTHER_ERR;
     }
 
+    const U16 rawTemperature =
+    static_cast<U16>(
+        (static_cast<U16>(data[0]) << 8) |
+        static_cast<U16>(data[1])
+    );
+
+    measurement.temp =
+        -45.0f +
+        175.0f *
+        static_cast<F32>(rawTemperature) /
+        65536.0f;
+
+
     const U16 rawHumidity =
         static_cast<U16>(
             (static_cast<U16>(data[3]) << 8) |
@@ -274,9 +287,11 @@ configure(
     }
 
     hum_data[0] = h.hum;
+    temp_data[0] = h.temp;
 
     this->tlmWrite_humidity(hum_data);
-    this->HumDataOut_out(0, hum_data);
+    this->tlmWrite_temperature(temp_data);
+    this->HumDataOut_out(0, hum_data,temp_data);
 }
 
   void HumSensor::update()

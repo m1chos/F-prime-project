@@ -18,6 +18,9 @@ module Components {
         
         telemetry humidity: HumVector id 0 update always format "{}"
 
+        telemetry temperature: TempVector id 1 update always \
+        format "{} degC"
+
 
  
         ###############################################################################

@@ -129,7 +129,7 @@ void Payload::acceleration_led_handler() {
     
   }
 
-void Payload::HumDataIn_handler(NATIVE_INT_TYPE portNum, const Components::HumVector &humidity)
+void Payload::HumDataIn_handler(NATIVE_INT_TYPE portNum, const Components::HumVector &humidity, const Components::TempVector &temperature)
   {
          
     if (this->m_state == Fw::On::ON) {
@@ -143,7 +143,20 @@ void Payload::HumDataIn_handler(NATIVE_INT_TYPE portNum, const Components::HumVe
 
     avgHumidity[0] = calculateAverage(this->hum_data, this->m_humSampleCount);
        
-      this->tlmWrite_avgHum(avgHumidity);
+    this->temp_data[this->t_counter] = temperature[0];
+
+    if (this->m_tempSampleCount < FILTER_SIZE) {
+    this->m_tempSampleCount++;
+    }
+
+    this->t_counter = (this->t_counter + 1) % FILTER_SIZE;
+
+    avgTemperature[0] = calculateAverage(this->temp_data, this->m_tempSampleCount);
+
+
+    this->tlmWrite_avgHum(avgHumidity);
+    this->tlmWrite_avgTemp(avgTemperature);
+    
       }  
   }
 
@@ -164,6 +177,16 @@ void Payload :: humidity_led_handler() {
       this->tlmWrite_YellowLedState(YellowLedState);
     }
  }
+
+void Payload::temperature_led_handler()
+{
+    if (this->m_state == Fw::On::ON) {
+
+        if (avgTemperature[0] <= TEMP_LIMIT_LOW ||avgTemperature[0] >= TEMP_LIMIT_HIGH) {
+          this->log_ACTIVITY_HI_TemperatureDanger(avgTemperature);
+        }
+    }
+}
 
   void Payload :: StartPayload_cmdHandler(
           FwOpcodeType opCode,
